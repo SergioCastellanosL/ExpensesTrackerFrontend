@@ -2,19 +2,23 @@
     import Button from 'primevue/button';
     import Menu from 'primevue/menu';
     import { ref } from "vue";
+    import { useRouter } from 'vue-router';
 
+    const router = useRouter();
     const menu = ref();
     const items = ref([
         {
             label: 'Menu',
             items: [
                 {
-                    label: 'Refresh',
-                    icon: 'pi pi-refresh'
+                    label: 'Home',
+                    icon: 'pi pi-home',
+                    command: ()=> router.push('/')
                 },
                 {
-                    label: 'Export',
-                    icon: 'pi pi-upload'
+                    label: 'Users',
+                    icon: 'pi pi-users',
+                    command: ()=> router.push('/users')
                 }
             ]
         }
@@ -26,9 +30,9 @@
 </script>
 
 <template>
-  <header class="tracker-header flex justify-between">
+  <header class="tracker-header flex justify-between content-center">
     <!-- Left: Hamburger + Logo -->
-    <div class="p-d-flex p-ai-center">
+    <div class="p-d-flex content-center">
       <Button icon="pi pi-bars" class="p-button-text p-mr-3" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
       <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"  />
       
@@ -37,18 +41,11 @@
     </div>
 
     <!-- Right: Action icons -->
-    <div class="">
+    <div class="content-center">
       <Button icon="pi pi-sun" class="p-button-text p-mr-2" @click="toggleTheme" />
       <Button icon="pi pi-user" class="p-button-text p-mr-2" @click="$emit('open-profile')" />
       <Button icon="pi pi-ellipsis-v" class="p-button-text" @click="$emit('open-menu')" />
     </div>
-  </header>
-  <header class="app-header">
-    <h1>Expense Tracker</h1>
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/users">Users</router-link>
-    </nav>
   </header>
 </template>
 
