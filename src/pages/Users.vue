@@ -21,11 +21,46 @@
       console.error(err);
     }
   });
-  const onRowEditSave = (event) => {
+  const onRowEditSave = async (event) => {
     let { newData, index } = event;
-    users.value[index] = newData;
+    const userIndex = users.value.findIndex((u) => u.id === newData.id);
+    if (userIndex === -1) {
+      alert("User not found in list.");
+      return;
+    }
+    const usernameExists = users.value.some(
+      (user, i) => user.username === newData.username && i !== userIndex
+    );
+    if (usernameExists) {
+      alert('Username already exists. Please choose a different one.');
+      return;
+    }
+    try {
+      const response = await fetch(`http://10.0.0.6:3000/users/${newData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newData),
+      });
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          alert("Username already exists in the database.");
+        } else {
+          alert("Failed to update user in the database.");
+        }
+        return;
+      }
+      users.value[userIndex] = newData;
+
+      console.log("User updated successfully");
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Network or server error while updating user.");
+    }
   };
-  const confirm1 = () => {
+  const confirm1 = (id) => {
     confirm.require({
       message: 'Do you want to delete this user?',
       header: 'Danger Zone',
@@ -40,8 +75,23 @@
             label: 'Delete',
             severity: 'danger'
       },
-      accept: () => {
-            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'User deleted', life: 3000 });
+      accept: async () => {
+        try {
+          const response = await fetch(`http://10.0.0.6:3000/users/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            }
+          });
+          if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error || "Failed to delete user");
+          }
+          users.value = users.value.filter(u => u.id !== id);
+          toast.add({ severity: 'success', summary: 'Deleted', detail: 'User deleted', life: 3000 });
+        } catch (error) {
+          toast.add({ severity: 'error', summary: 'Rejected', detail: 'Action canceled', life: 3000 });
+        }
       },
       reject: () => {
           toast.add({ severity: 'error', summary: 'Rejected', detail: 'Action canceled', life: 3000 });
@@ -137,7 +187,7 @@
               severity="danger"
               class="p-button-text"
               rounded
-              @click="confirm1()"
+              @click="confirm1(data.id)"
             />
           </template>
         </Column>
