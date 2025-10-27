@@ -104,8 +104,7 @@
         username: z.string().min(1, { message: 'Username is required.' }),
         password: z
             .string()
-            .min(3, { message: 'Minimum 3 characters.' })
-            .max(8, { message: 'Maximum 8 characters.' })
+            .min(6, { message: 'Minimum 3 characters.' })
             .refine((value) => /[a-z]/.test(value), {
                 message: 'Must have a lowercase letter.'
             })
