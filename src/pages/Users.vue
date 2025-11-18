@@ -17,7 +17,7 @@
       const res = await fetch('http://10.0.0.6:3000/users');
       if (!res.ok) throw new Error('Failed to fetch users');
       users.value = await res.json();
-    }catch{
+    }catch(err){
       console.error(err);
     }
   });
