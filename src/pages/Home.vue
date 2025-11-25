@@ -4,8 +4,9 @@
   import {zodResolver} from "@primevue/forms/resolvers/zod";
   import { Form } from '@primevue/forms';
   import {z} from 'zod';
+  import { useRouter } from 'vue-router';
   
-
+  const router = useRouter();
   onMounted(async () => {
     try{
       const res = await fetch('http://10.0.0.6:3000/accounts', {
@@ -95,6 +96,9 @@
       userSuggestions.value = []
     }
   }
+  const goToAccount = (account) =>{
+    router.push(`/account/${account.id}`);
+  }
 </script>
 
 <template>
@@ -103,7 +107,7 @@
       <h2 class="text-lg font-semibold text-primary">Accounts</h2>
       <Button icon="pi pi-plus" class="p-button-text p-mr-2" @click="showAccountForm=true" />
   </div>
-    <Card v-for="account in accounts" :key="account.id" class="mb-2">
+    <Card v-for="account in accounts" :key="account.id" class="mb-2" @click="goToAccount(account)">
       <template #content>
         <div class="flex items-center justify-between gap-4">
           <div class="min-w-0">
